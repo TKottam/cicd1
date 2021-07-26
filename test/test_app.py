@@ -1,4 +1,4 @@
-from app import index
+from app import FUN_root
 
 
 def test_index():
