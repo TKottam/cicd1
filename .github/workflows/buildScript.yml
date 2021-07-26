@@ -53,9 +53,6 @@ jobs:
     - name: Test with pytest
       run: |
          pip install pytest
-<<<<<<< Updated upstream
          export PYTHONPATH=./
-=======
          pip install selenium
->>>>>>> Stashed changes
          pytest
