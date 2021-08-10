@@ -9,6 +9,11 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.4"
     }
+
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.2.0"
+    }
   }
 
   backend "s3" {
@@ -19,9 +24,23 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+  #   load_config_file       = false
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.cluster.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.cluster.token
+  }
+}
 variable "availability_zone_names" {
   type    = list(string)
   default = ["us-east-1a", "us-east-1b", "us-east-1c"] // Put it manually instead of auto picking active ones due to availability issues of the instance types
@@ -87,12 +106,7 @@ data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  #   load_config_file       = false
-}
+
 
 resource "kubernetes_deployment" "kottam-cicd" {
   metadata {
@@ -160,19 +174,14 @@ output "kottam-cicd" {
   value = "${kubernetes_service.kottam-cicd.status[0].load_balancer[0].ingress[0].hostname}:${kubernetes_service.kottam-cicd.spec[0].port[0].port}"
 }
 
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
-  }
-}
+
 
 resource "helm_release" "grafana" {
   name = "grafana"
 
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "grafana"
+  namespace  = "default"
 
   set {
     name  = "service.type"
@@ -200,6 +209,7 @@ resource "helm_release" "kube-prometheus" {
 
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "kube-prometheus"
+  namespace  = "default"
 
   set {
     name  = "prometheus.service.type"
