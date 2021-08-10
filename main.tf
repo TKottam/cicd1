@@ -12,7 +12,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "mybackendproject-123456789"
+    bucket = "cicd-692"
     key    = "backend.tfstate"
     region = "us-east-1"
   }
