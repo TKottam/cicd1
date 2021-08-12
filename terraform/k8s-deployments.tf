@@ -96,7 +96,7 @@ resource "helm_release" "grafana" {
 }
 
 resource "helm_release" "kube-prometheus" {
-  depends_on = [helm_release.kube-prometheus]
+  depends_on = [helm_release.grafana]
 
   name = "kube-prometheus"
 
