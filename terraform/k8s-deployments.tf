@@ -45,6 +45,8 @@ resource "kubernetes_deployment" "kottam-cicd" {
 }
 
 resource "kubernetes_service" "kottam-cicd" {
+  depends_on = [kubernetes_deployment.kottam-cicd]
+
   metadata {
     name      = "kottam-cicd"
     namespace = var.k8s_namespace
@@ -64,6 +66,8 @@ resource "kubernetes_service" "kottam-cicd" {
 }
 
 resource "helm_release" "grafana" {
+  depends_on = [kubernetes_service.kottam-cicd]
+
   name = "grafana"
 
   repository = "https://charts.bitnami.com/bitnami"
@@ -92,6 +96,8 @@ resource "helm_release" "grafana" {
 }
 
 resource "helm_release" "kube-prometheus" {
+  depends_on = [helm_release.kube-prometheus]
+
   name = "kube-prometheus"
 
   repository = "https://charts.bitnami.com/bitnami"
