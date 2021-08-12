@@ -80,7 +80,7 @@ jobs:
 
   dev:
     name: "Terraform dev"
-    # needs: docker
+    needs: docker
     runs-on: ubuntu-latest
     environment: dev
 
