@@ -142,7 +142,7 @@ jobs:
     name: "Terraform prod"
     runs-on: ubuntu-latest
     environment: prod
-    needs: qa
+    needs: test
 
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
