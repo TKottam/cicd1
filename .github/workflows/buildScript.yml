@@ -100,7 +100,7 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Set Terraform Workspace
-        run: terraform -chdir=terraform workspace dev
+        run: terraform -chdir=terraform workspace new dev
 
       - name: Terraform Plan
         run: terraform -chdir=terraform plan
@@ -130,7 +130,7 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Set Terraform Workspace
-        run: terraform -chdir=terraform workspace test
+        run: terraform -chdir=terraform workspace new test
 
       - name: Terraform Plan
         run: terraform -chdir=terraform plan
@@ -160,7 +160,7 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Set Terraform Workspace
-        run: terraform -chdir=terraform workspace prod
+        run: terraform -chdir=terraform workspace new prod
 
       - name: Terraform Plan
         run: terraform -chdir=terraform plan
